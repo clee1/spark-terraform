@@ -113,10 +113,16 @@ resource "aws_key_pair" "emr_key_pair" {
 resource "aws_s3_bucket" "logging_bucket" {
   bucket = "emr-logging-bucket"
   region = "eu-west-1"
+  acl    = "log-delivery-write"
 
   versioning {
     enabled = "true"
   }
+}
+
+resource "aws_s3_bucket" "b" {
+  bucket = "emr-logging-bucket"
+  acl    = "private"
 }
 
 # Security Groups
@@ -283,7 +289,7 @@ resource "aws_emr_cluster" "emr-spark-cluster" {
    core_instance_type = "m2.xlarge"
    core_instance_count = 2
 
-   log_uri = "${aws_s3_bucket.logging_bucket.uri}"
+   log_uri = "${aws_s3_bucket.logging_bucket.id}"
 
    tags {
      name = "EMR-cluster"
